@@ -102,8 +102,10 @@ class CalendarListEventsCmd(BaseCmd):
             "Time",
             "Event",
             box=ROUNDED,
+            style="#d06b64",
             title="Calendar Events",
-            header_style="italic",
+            title_style="#d06b64 italic",
+            header_style="#d06b64 italic",
         )
 
         last_month = None

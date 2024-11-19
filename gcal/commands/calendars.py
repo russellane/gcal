@@ -34,9 +34,13 @@ class CalendarListCalendarsCmd(BaseCmd):
             "Description",
             "Time Zone",
             "Access Role",
+            "Color",
             box=ROUNDED,
             show_lines=True,
+            style="#d06b64",
             title="User's Calendar List",
+            title_style="#d06b64 italic",
+            header_style="#d06b64 italic",
         )
 
         assert isinstance(self.cli, GoogleCalendarCLI)
@@ -48,6 +52,7 @@ class CalendarListCalendarsCmd(BaseCmd):
                 entry.get("description", ""),
                 entry["timeZone"],
                 entry["accessRole"],
+                entry["backgroundColor"],
                 style=f"{entry['backgroundColor']} on {entry['foregroundColor']}",
             )
 
