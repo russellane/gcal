@@ -1,6 +1,6 @@
 [project]
 name = "rlane-gcal"
-version = "1.0.2"
+version = "1.0.3"
 description = "Google Calendar CLI"
 authors = [
     {name = "Russel Lane", email = "russel@rlane.com"},
@@ -32,9 +32,7 @@ Homepage = "https://github.com/russellane/gcal"
 [project.scripts]
 gcal = "gcal.cli:main"
 
-[tool.pdm]
-
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
     "black>=24.10.0",
     "flake8-bugbear>=24.10.31",

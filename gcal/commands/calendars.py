@@ -1,22 +1,21 @@
 """Calendar `calendars` command module."""
 
 import rich
-from libcli import BaseCmd
 from rich.box import ROUNDED
 from rich.table import Table
 
-from gcal.cli import GoogleCalendarCLI
+from gcal.commands import GoogleCalendarCmd
 
 __all__ = ["CalendarListCalendarsCmd"]
 
 
-class CalendarListCalendarsCmd(BaseCmd):
+class CalendarListCalendarsCmd(GoogleCalendarCmd):
     """Calendar `calendars` command class."""
 
     def init_command(self) -> None:
-        """Initialize Calandar `calendars` command."""
+        """Initialize Calendar `calendars` command."""
 
-        self.add_subcommand_parser(
+        parser = self.add_subcommand_parser(
             "calendars",
             help="Display calendars in the user's calendar list",
             description=self.cli.dedent(
@@ -25,6 +24,10 @@ class CalendarListCalendarsCmd(BaseCmd):
                 """,
             ),
         )
+
+        self.add_includes_excludes_options(parser)
+        self.add_limit_option(parser)
+        self.add_pretty_print_option(parser)
 
     def run(self) -> None:
         """Run Calendar `calendars` command."""
@@ -43,9 +46,14 @@ class CalendarListCalendarsCmd(BaseCmd):
             header_style="#d06b64 italic",
         )
 
-        assert isinstance(self.cli, GoogleCalendarCLI)
-
         for entry in self.cli.api.get_users_calendar_list():
+
+            if self.check_limit():
+                break
+
+            if self.cli.options.pretty_print:
+                self.pprint(entry)
+                continue
 
             table.add_row(
                 entry["summary"],
@@ -56,4 +64,5 @@ class CalendarListCalendarsCmd(BaseCmd):
                 style=f"{entry['backgroundColor']} on {entry['foregroundColor']}",
             )
 
-        rich.print(table)
+        if not self.cli.options.pretty_print:
+            rich.print(table)

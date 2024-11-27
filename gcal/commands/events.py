@@ -5,16 +5,15 @@ from typing import Any, Iterator
 
 import dateparser
 import rich
-from libcli import BaseCmd
 from rich.box import ROUNDED
 from rich.table import Table
 
-from gcal.cli import GoogleCalendarCLI
+from gcal.commands import GoogleCalendarCmd
 
 __all__ = ["CalendarListEventsCmd"]
 
 
-class CalendarListEventsCmd(BaseCmd):
+class CalendarListEventsCmd(GoogleCalendarCmd):
     """Calendar `events` command class."""
 
     start_date: datetime.datetime | None
@@ -34,9 +33,7 @@ class CalendarListEventsCmd(BaseCmd):
             ),
         )
 
-        group = parser.add_argument_group("Filtering options")
-
-        group.add_argument(
+        parser.add_argument(
             "-s",
             "--start",
             dest="start_date",
@@ -48,7 +45,7 @@ class CalendarListEventsCmd(BaseCmd):
             ),
         )
 
-        group.add_argument(
+        parser.add_argument(
             "-e",
             "--end",
             dest="end_date",
@@ -60,7 +57,7 @@ class CalendarListEventsCmd(BaseCmd):
             ),
         )
 
-        arg = group.add_argument(
+        arg = parser.add_argument(
             "-n",
             "--numdays",
             dest="numdays",
@@ -73,6 +70,10 @@ class CalendarListEventsCmd(BaseCmd):
             ),
         )
         self.cli.add_default_to_help(arg, parser)
+
+        self.add_includes_excludes_options(parser)
+        self.add_limit_option(parser)
+        self.add_pretty_print_option(parser)
 
     def run(self) -> None:
         """Run Calendar `events` command."""
@@ -112,16 +113,19 @@ class CalendarListEventsCmd(BaseCmd):
 
         for event in sorted(self._get_users_events(), key=lambda x: x["_start_date"]):
 
+            if self.check_limit():
+                break
+
             if _date_time := event["start"].get("dateTime"):
                 _dt = dateparser.parse(_date_time)
                 assert _dt
-                date = _dt.strftime("%a %b %e")
+                date = _dt.strftime("%Y %a %b %e")
                 time = _dt.strftime("%H:%M")
 
             elif _date := event["start"].get("date"):
                 _dt = dateparser.parse(_date)
                 assert _dt
-                date = _dt.strftime("%a %b %e")
+                date = _dt.strftime("%Y %a %b %e")
                 time = ""
 
             else:
@@ -129,11 +133,15 @@ class CalendarListEventsCmd(BaseCmd):
                     "event['start'] missing `dateTime` and `date`."
                 )  # pragma: no cover
 
-            if last_month and last_month != _dt.month:
+            if not self.cli.options.pretty_print and last_month and last_month != _dt.month:
                 table.add_section()
             last_month = _dt.month
 
             calendar = event["_calendar"]
+
+            if self.cli.options.pretty_print:
+                self.pprint(calendar)
+                continue
 
             table.add_row(
                 calendar["summary"],
@@ -143,12 +151,11 @@ class CalendarListEventsCmd(BaseCmd):
                 style=f"{calendar['backgroundColor']} on {calendar['foregroundColor']}",
             )
 
-        rich.print(table)
+        if not self.cli.options.pretty_print:
+            rich.print(table)
 
     def _get_users_events(self) -> Iterator[dict[str, Any]]:
         """Yield events from all calendars in user's calendar list."""
-
-        assert isinstance(self.cli, GoogleCalendarCLI)
 
         for calendar in self.cli.api.get_users_calendar_list():
 
@@ -171,8 +178,6 @@ class CalendarListEventsCmd(BaseCmd):
 
         if self.end_date:
             args["timeMax"] = self.end_date.isoformat() + "Z"  # `Z` indicates `UTC`.
-
-        assert isinstance(self.cli, GoogleCalendarCLI)
 
         result = self.cli.api.service.events().list(**args).execute()
         yield from result.get("items", [])

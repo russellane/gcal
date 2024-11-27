@@ -1,5 +1,6 @@
 """Interface to Google Calendar."""
 
+from argparse import Namespace
 from typing import Any, Iterator
 
 from gcal.google import connect_to_google
@@ -15,9 +16,10 @@ class GoogleCalendarAPI:
 
     # pylint: disable=too-few-public-methods
 
-    def __init__(self) -> None:
+    def __init__(self, options: Namespace) -> None:
         """Connect to Google Calendar."""
 
+        self.options = options
         self.service = connect_to_google("calendar.readonly", "v3")
 
     def get_users_calendar_list(self) -> Iterator[dict[str, Any]]:
@@ -28,7 +30,12 @@ class GoogleCalendarAPI:
             calendar_list = (
                 self.service.calendarList().list(pageToken=page_token).execute()  # noqa: PLE101
             )
-            yield from calendar_list["items"]
+            for calendar in calendar_list["items"]:
+                if self.options.includes and calendar["summary"] not in self.options.includes:
+                    continue
+                if self.options.excludes and calendar["summary"] in self.options.excludes:
+                    continue
+                yield calendar
             page_token = calendar_list.get("nextPageToken")
             if not page_token:
                 break

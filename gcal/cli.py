@@ -1,7 +1,6 @@
 """Command Line Interface to Google Calendar."""
 
 from pathlib import Path
-from typing import Any
 
 from libcli import BaseCLI
 
@@ -22,13 +21,13 @@ class GoogleCalendarCLI(BaseCLI):
         "dist-name": "rlane-gcal",
     }
 
-    api: Any = None  # connection to google service
+    api: GoogleCalendarAPI  # connection to google service
 
     def init_parser(self) -> None:
         """Initialize argument parser."""
 
         self.ArgumentParser(
-            prog="gcal",
+            prog=__package__,
             description="Google `calendar` command line interface.",
             epilog="See `%(prog)s COMMAND --help` for help on a specific command.",
         )
@@ -45,7 +44,7 @@ class GoogleCalendarCLI(BaseCLI):
             self.parser.print_help()
             self.parser.exit(2, "error: Missing COMMAND\n")
 
-        self.api = GoogleCalendarAPI()
+        self.api = GoogleCalendarAPI(self.options)
         self.options.cmd()
 
 
