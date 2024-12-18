@@ -3,7 +3,7 @@
 from argparse import Namespace
 from typing import Any, Iterator
 
-from gcal.google import connect_to_google
+from libgoogle import connect_to_google
 
 __all__ = ["GoogleCalendarAPI"]
 

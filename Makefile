@@ -1,9 +1,9 @@
 include Python.mk
 PROJECT	= gcal
 ifdef SLOW
-	COV_FAIL_UNDER = 96
+	COV_FAIL_UNDER = 100
 else
-	COV_FAIL_UNDER = 94
+	COV_FAIL_UNDER = 98
 endif
 lint :: mypy
 doc :: README.md

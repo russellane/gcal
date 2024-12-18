@@ -14,7 +14,7 @@ class GoogleCalendarCLI(BaseCLI):
 
     config = {
         # name of config file.
-        "config-file": Path("~/.pygoogle.toml"),
+        "config-file": Path("~/.libgoogle.toml"),
         # toml [section-name].
         "config-name": "gcal",
         # distribution name, not importable package name
