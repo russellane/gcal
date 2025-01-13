@@ -1,6 +1,6 @@
 [project]
 name = "rlane-gcal"
-version = "1.0.4"
+version = "1.0.5"
 description = "Google Calendar CLI"
 authors = [
     {name = "Russel Lane", email = "russel@rlane.com"},
@@ -20,7 +20,7 @@ dependencies = [
     "loguru>=0.7.3",
     "rich>=13.9.4",
     "rlane-libcli>=1.0.8",
-    "rlane-libgoogle>=1.0.1",
+    "rlane-libgoogle>=1.0.2",
 ]
 
 [project.urls]
@@ -35,11 +35,11 @@ dev = [
     "flake8-bugbear>=24.12.12",
     "flake8-pydocstyle>=0.2.5",
     "flake8-pylint>=0.2.1",
-    "flake8-pytest-style>=2.0.0",
+    "flake8-pytest-style>=2.1.0",
     "flake8-simplify>=0.21.0",
     "flake8>=7.1.1",
     "isort>=5.13.2",
-    "mypy>=1.13.0",
+    "mypy>=1.14.1",
     "pytest-cov>=6.0.0",
     "pytest>=8.3.4",
     "types-dateparser>=1.2.0.20240420",

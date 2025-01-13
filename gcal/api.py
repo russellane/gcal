@@ -3,7 +3,7 @@
 from argparse import Namespace
 from typing import Any, Iterator
 
-from libgoogle import connect_to_google
+import libgoogle
 
 __all__ = ["GoogleCalendarAPI"]
 
@@ -20,7 +20,7 @@ class GoogleCalendarAPI:
         """Connect to Google Calendar."""
 
         self.options = options
-        self.service = connect_to_google("calendar.readonly", "v3")
+        self.service = libgoogle.connect("calendar.readonly", "v3")
 
     def get_users_calendar_list(self) -> Iterator[dict[str, Any]]:
         """Yield each calendar in user's calendar list."""
