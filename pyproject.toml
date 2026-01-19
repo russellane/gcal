@@ -1,6 +1,6 @@
 [project]
 name = "rlane-gcal"
-version = "1.0.5"
+version = "1.0.6"
 description = "Google Calendar CLI"
 authors = [
     {name = "Russel Lane", email = "russel@rlane.com"},
@@ -19,8 +19,8 @@ dependencies = [
     "dateparser>=1.2.0",
     "loguru>=0.7.3",
     "rich>=13.9.4",
-    "rlane-libcli>=1.0.8",
-    "rlane-libgoogle>=1.0.2",
+    "rlane-libcli>=1.0.9",
+    "rlane-libgoogle>=1.0.3",
 ]
 
 [project.urls]
