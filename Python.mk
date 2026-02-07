@@ -1,13 +1,14 @@
 # russellane/Python.mk
 
-VENV ?= .venv
+VENV ?=		.venv
 
-build::		$(VENV) tags lint test doc
-		pdm build
+build::		venv tags lint test doc dist
 
 lint::		black isort flake8
 test::		pytest
 doc::		;
+dist::
+		pdm build
 
 bump_micro::	_bump_micro clean build
 _bump_micro:
@@ -27,6 +28,8 @@ install::
 		-pipx uninstall $(PROJECT_NAME)
 		pipx install .
 
+.PHONY:		venv
+venv:		$(VENV)
 $(VENV):
 		pdm install
 
