@@ -37,24 +37,20 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
             "-s",
             "--start",
             dest="start_date",
-            help=self.cli.dedent(
-                """
+            help=self.cli.dedent("""
     List events at or after `START_DATE` (inclusive) (YYYY-MM-DD).
     Defaults to `today`. Use `all` to not filter by start-date.
-                """
-            ),
+                """),
         )
 
         parser.add_argument(
             "-e",
             "--end",
             dest="end_date",
-            help=self.cli.dedent(
-                """
+            help=self.cli.dedent("""
     List events prior to `END_DATE` (exclusive) (YYYY-MM-DD).
     Defaults to `NUMDAYS` from `START_DATE`. Use `all` to not filter by end-date.
-                """
-            ),
+                """),
         )
 
         arg = parser.add_argument(
@@ -63,11 +59,9 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
             dest="numdays",
             type=int,
             default=90,
-            help=self.cli.dedent(
-                """
+            help=self.cli.dedent("""
     List up to `NUMDAYS` days of events.
-                """
-            ),
+                """),
         )
         self.cli.add_default_to_help(arg, parser)
 
