@@ -10,23 +10,7 @@ doc::		;
 dist::
 		pdm build
 
-bump_micro::	_bump_micro clean build
-_bump_micro:
-		pdm bump micro
-
-publish_local::
-		cd dist; echo *.whl | cpio -pdmuv `pip config get global.find-links`
-
-publish_test::
-		twine upload --verbose -r testpypi dist/*
-
-publish_prod::
-		twine upload --verbose -r pypi dist/*
-
 PROJECT_NAME := $(shell sed -ne 's/^name = "\(.*\)"$$/\1/p' pyproject.toml)
-install::
-		-pipx uninstall $(PROJECT_NAME)
-		pipx install .
 
 .PHONY:		venv
 venv:		$(VENV)
@@ -63,6 +47,19 @@ pytest_debug::
 
 coverage::
 		pdm run pytest --cov=$(PROJECT) tests
+
+install::
+		-pipx uninstall $(PROJECT_NAME)
+		pipx install .
+
+publish_local::
+		cd dist; echo *.whl | cpio -pdmuv `pip config get global.find-links`
+
+publish_test::
+		twine upload --verbose -r testpypi dist/*
+
+publish_prod::
+		twine upload --verbose -r pypi dist/*
 
 clean::
 		rm -rf .coverage .mypy_cache .pdm-build .pytest_cache $(VENV) dist htmlcov tags

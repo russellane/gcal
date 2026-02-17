@@ -1,6 +1,6 @@
 [project]
 name = "rlane-gcal"
-version = "1.0.6"
+version = "1.0.7"
 description = "Google Calendar CLI"
 authors = [
     {name = "Russel Lane", email = "russel@rlane.com"},
@@ -19,8 +19,8 @@ dependencies = [
     "dateparser>=1.2.0",
     "loguru>=0.7.3",
     "rich>=13.9.4",
-    "rlane-libcli>=1.0.9",
-    "rlane-libgoogle>=1.0.3",
+    "rlane-libcli>=1.0.10",
+    "rlane-libgoogle>=1.0.4",
 ]
 
 [project.urls]
@@ -45,6 +45,9 @@ dev = [
     "types-dateparser>=1.2.0.20240420",
     "types-requests>=2.32.0.20241016",
 ]
+
+[tool.coverage.run]
+omit = ["gcal/__main__.py"]
 
 [tool.pytest.ini_options]
 filterwarnings = [
