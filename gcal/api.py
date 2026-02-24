@@ -14,8 +14,6 @@ class GoogleCalendarAPI:
     See https://developers.google.com/calendar/api/v3/reference
     """
 
-    # pylint: disable=too-few-public-methods
-
     def __init__(self, options: Namespace) -> None:
         """Connect to Google Calendar."""
 
@@ -27,9 +25,7 @@ class GoogleCalendarAPI:
 
         page_token = None
         while True:
-            calendar_list = (
-                self.service.calendarList().list(pageToken=page_token).execute()  # noqa: PLE101
-            )
+            calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
             for calendar in calendar_list["items"]:
                 if self.options.includes and calendar["summary"] not in self.options.includes:
                     continue

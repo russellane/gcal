@@ -72,11 +72,9 @@ def test_gcal_events_limit_2_pretty_print() -> None:
         ("all", "all"),
         ("all", "in 30 days"),
         ("all", None),
-        #
         ("today", "all"),
         ("today", "in 30 days"),
         ("today", None),
-        #
         (None, "all"),
         (None, "in 30 days"),
         (None, None),

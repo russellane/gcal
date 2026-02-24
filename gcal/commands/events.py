@@ -69,7 +69,8 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
         self.add_limit_option(parser)
         self.add_pretty_print_option(parser)
 
-    def run(self) -> None:
+    # Too many branches; dispatches over multiple filtering and formatting conditions.
+    def run(self) -> None:  # noqa: PLR0912
         """Run Calendar `events` command."""
 
         # START_DATE
@@ -106,7 +107,6 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
         last_month = None
 
         for event in sorted(self._get_users_events(), key=lambda x: x["_start_date"]):
-
             if self.check_limit():
                 break
 
@@ -152,9 +152,7 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
         """Yield events from all calendars in user's calendar list."""
 
         for calendar in self.cli.api.get_users_calendar_list():
-
             for event in self._get_calendar_events(calendar):
-
                 event["_start_date"] = event["start"].get("dateTime", event["start"].get("date"))
                 event["_calendar"] = calendar
                 yield event

@@ -47,7 +47,6 @@ class CalendarListCalendarsCmd(GoogleCalendarCmd):
         )
 
         for entry in self.cli.api.get_users_calendar_list():
-
             if self.check_limit():
                 break
 
