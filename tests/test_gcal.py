@@ -62,6 +62,14 @@ def test_gcal_events_limit_2_pretty_print() -> None:
     run_cli(["events", "--limit", "2", "--pretty-print"])
 
 
+def test_gcal_events_pad_weeks() -> None:
+    run_cli(["events", "--pad-weeks"])
+
+
+def test_gcal_events_pad_weeks_limit_2() -> None:
+    run_cli(["events", "--pad-weeks", "--limit", "2"])
+
+
 # -------------------------------------------------------------------------------
 
 

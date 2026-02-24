@@ -65,6 +65,16 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
         )
         self.cli.add_default_to_help(arg, parser)
 
+        parser.add_argument(
+            "-w",
+            "--pad-weeks",
+            action="store_true",
+            help=self.cli.dedent("""
+    Show every day in the date range; display a blank row for days with no events.
+    Defaults to at least one month when no end date or numdays is given.
+                """),
+        )
+
         self.add_includes_excludes_options(parser)
         self.add_limit_option(parser)
         self.add_pretty_print_option(parser)
@@ -92,6 +102,10 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
             # or default to `NUMDAYS` from `START_DATE` (if given).
             self.end_date = self.start_date + datetime.timedelta(days=self.cli.options.numdays)
 
+        if self.cli.options.pad_weeks and self.start_date and not self.cli.options.end_date:
+            numdays = max(self.cli.options.numdays, 30)
+            self.end_date = self.start_date + datetime.timedelta(days=numdays)
+
         table = Table(
             "Calendar",
             "Date",
@@ -104,9 +118,15 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
             header_style="#d06b64 italic",
         )
 
+        events = sorted(self._get_users_events(), key=lambda x: x["_start_date"])
+
+        if self.cli.options.pad_weeks and not self.cli.options.pretty_print:
+            self._run_pad_weeks(table, events)
+            return
+
         last_month = None
 
-        for event in sorted(self._get_users_events(), key=lambda x: x["_start_date"]):
+        for event in events:
             if self.check_limit():
                 break
 
@@ -147,6 +167,48 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
 
         if not self.cli.options.pretty_print:
             rich.print(table)
+
+    def _run_pad_weeks(self, table: Table, events: list[dict[str, Any]]) -> None:
+        """Fill `table` with one row per day across the date range; blank row if no events."""
+
+        assert self.start_date
+        assert self.end_date
+        num_days = (self.end_date - self.start_date).days
+
+        by_date: dict[str, list[dict[str, Any]]] = {}
+        for event in events:
+            by_date.setdefault(event["_start_date"][:10], []).append(event)
+
+        for i in range(num_days):
+            day = self.start_date + datetime.timedelta(days=i)
+            date_str = day.strftime("%Y %a %b %e")
+
+            if i > 0 and i % 7 == 0:
+                table.add_section()
+
+            day_events = by_date.get(day.strftime("%Y-%m-%d"), [])
+            if not day_events:
+                table.add_row("", date_str, "", "")
+                continue
+
+            for event in day_events:
+                if self.check_limit():
+                    break
+                calendar = event["_calendar"]
+                time = ""
+                if _dt_str := event["start"].get("dateTime"):
+                    _dt = dateparser.parse(_dt_str)
+                    assert _dt
+                    time = _dt.strftime("%H:%M")
+                table.add_row(
+                    calendar["summary"],
+                    date_str,
+                    time,
+                    event["summary"],
+                    style=f"{calendar['backgroundColor']} on {calendar['foregroundColor']}",
+                )
+
+        rich.print(table)
 
     def _get_users_events(self) -> Iterator[dict[str, Any]]:
         """Yield events from all calendars in user's calendar list."""

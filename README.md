@@ -45,7 +45,7 @@ options:
 
 ## gcal events
 ```
-usage: gcal events [-h] [-s START_DATE] [-e END_DATE] [-n NUMDAYS]
+usage: gcal events [-h] [-s START_DATE] [-e END_DATE] [-n NUMDAYS] [-w]
                    [--include-calendars [CALENDARS ...] |
                    --exclude-calendars [CALENDARS ...]] [--limit LIMIT]
                    [--pretty-print]
@@ -64,6 +64,9 @@ options:
                         `all` to not filter by end-date.
   -n, --numdays NUMDAYS
                         List up to `NUMDAYS` days of events (default: `90`).
+  -w, --pad-weeks       Show every day in the date range; display a blank row
+                        for days with no events. Defaults to at least one
+                        month when no end date or numdays is given.
   --include-calendars [CALENDARS ...]
                         Only display from the given list of calendars.
   --exclude-calendars [CALENDARS ...]
