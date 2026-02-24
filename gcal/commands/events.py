@@ -71,7 +71,6 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
             action="store_true",
             help=self.cli.dedent("""
     Show every day in the date range; display a blank row for days with no events.
-    Defaults to at least one month when no end date or numdays is given.
                 """),
         )
 
@@ -103,8 +102,7 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
             self.end_date = self.start_date + datetime.timedelta(days=self.cli.options.numdays)
 
         if self.cli.options.pad_weeks and self.start_date and not self.cli.options.end_date:
-            numdays = max(self.cli.options.numdays, 30)
-            self.end_date = self.start_date + datetime.timedelta(days=numdays)
+            self.end_date = self.start_date + datetime.timedelta(days=self.cli.options.numdays)
 
         table = Table(
             "Calendar",

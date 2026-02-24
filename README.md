@@ -65,8 +65,7 @@ options:
   -n, --numdays NUMDAYS
                         List up to `NUMDAYS` days of events (default: `90`).
   -w, --pad-weeks       Show every day in the date range; display a blank row
-                        for days with no events. Defaults to at least one
-                        month when no end date or numdays is given.
+                        for days with no events.
   --include-calendars [CALENDARS ...]
                         Only display from the given list of calendars.
   --exclude-calendars [CALENDARS ...]
