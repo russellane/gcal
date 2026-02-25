@@ -1,6 +1,7 @@
 """Calendar `events` command module."""
 
 import datetime
+import shutil
 from typing import Any, Iterator
 
 import dateparser
@@ -173,24 +174,36 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
         assert self.end_date
         num_days = (self.end_date - self.start_date).days
 
+        # table overhead: top border (w/ title) + header + separator + bottom border = 4
+        term_lines = shutil.get_terminal_size().lines
+        max_rows = term_lines - 5  # 4 table overhead + 1 for shell prompt
+
         by_date: dict[str, list[dict[str, Any]]] = {}
         for event in events:
             by_date.setdefault(event["_start_date"][:10], []).append(event)
 
+        rows_used = 0
         for i in range(num_days):
             day = self.start_date + datetime.timedelta(days=i)
             date_str = day.strftime("%Y %a %b %e")
 
-            if i > 0 and i % 7 == 0:
+            if i > 0 and day.weekday() == 0:  # Monday → divider after Sunday
                 table.add_section()
+                rows_used += 1
+
+            if rows_used >= max_rows:
+                break
 
             day_events = by_date.get(day.strftime("%Y-%m-%d"), [])
             if not day_events:
                 table.add_row("", date_str, "", "")
+                rows_used += 1
                 continue
 
+            done = False
             for event in day_events:
-                if self.check_limit():
+                if self.check_limit() or rows_used >= max_rows:
+                    done = True
                     break
                 calendar = event["_calendar"]
                 time = ""
@@ -205,6 +218,9 @@ class CalendarListEventsCmd(GoogleCalendarCmd):
                     event["summary"],
                     style=f"{calendar['backgroundColor']} on {calendar['foregroundColor']}",
                 )
+                rows_used += 1
+            if done:
+                break
 
         rich.print(table)
 
